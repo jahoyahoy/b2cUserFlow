@@ -2,7 +2,7 @@
   let emailVerified = false;
 
   // FOR CUSTOM IDP
-  const domains = ["@ahoyahoy.com", "@test.com"]; // Add more domains as needed
+  const domains = ["@test.com"]; // Add more domains as needed
   const idpHintRedirects = {
     "@ahoyahoy.com": "whokta",
     "@test.com": "testIdP",
