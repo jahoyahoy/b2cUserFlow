@@ -92,6 +92,53 @@
         color: #666;
         font-size: 0.95rem;
         line-height: 1.5;
+        transition: all 0.3s ease;
+      }
+
+      /* Custom continue button for email verification */
+      .continue-btn {
+        width: 100% !important;
+        padding: 12px 24px !important;
+        border: none !important;
+        border-radius: 12px !important;
+        font-size: 1rem !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
+        font-weight: 500 !important;
+        background: #000000 !important;
+        color: white !important;
+        margin-top: 1rem !important;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif !important;
+        display: block !important;
+      }
+
+      .continue-btn:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3) !important;
+      }
+
+      .continue-btn:disabled {
+        background: #ccc !important;
+        cursor: not-allowed !important;
+        transform: none !important;
+        box-shadow: none !important;
+      }
+
+      /* Domain notification for ahoyahoy users */
+      .domain-notification {
+        background: rgba(52, 152, 219, 0.1);
+        border: 1px solid rgba(52, 152, 219, 0.2);
+        border-radius: 8px;
+        padding: 12px;
+        color: #3498db;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+        display: none;
+        animation: slideDown 0.3s ease;
+      }
+
+      .domain-notification.show {
+        display: block;
       }
 
       /* THIS IS WHERE OUR CSS ENDS */
@@ -124,26 +171,35 @@
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif !important;
       }
 
-      /* Initially hide password field and related elements */
+      /* Initially hide password field, signin button and related elements */
       #api input[type="password"],
       #api input[type="password"] + label,
       #api label[for*="password"],
       #api .password,
-      #forgotPassword {
+      #forgotPassword,
+      #api button[type="submit"],
+      #api input[type="submit"] {
         display: none !important;
         opacity: 0 !important;
         transition: all 0.3s ease !important;
       }
 
-      /* Show password field when email-verified class is added */
+      /* Show password field and signin button when email-verified class is added */
       .email-verified #api input[type="password"],
       .email-verified #api input[type="password"] + label,
       .email-verified #api label[for*="password"],
       .email-verified #api .password,
-      .email-verified #forgotPassword {
+      .email-verified #forgotPassword,
+      .email-verified #api button[type="submit"],
+      .email-verified #api input[type="submit"] {
         display: block !important;
         opacity: 1 !important;
         animation: slideIn 0.3s ease !important;
+      }
+
+      /* Hide continue button when password is shown */
+      .email-verified .continue-btn {
+        display: none !important;
       }
 
       @keyframes slideIn {
@@ -163,7 +219,6 @@
         outline: none !important;
         border-color: #000000 !important;
         background: white !important;
-        /*box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;*/
         transform: scale(1.02) !important;
       }
 
@@ -196,7 +251,7 @@
       #api button:hover,
       #api input[type="submit"]:hover {
         transform: translateY(-2px) !important;
-        box-shadow: 0 10px 20px rgba(94, 9, 9, 0.3) !important;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3) !important;
       }
 
       /* Style error messages */
@@ -314,13 +369,14 @@
       }
     </style>
     <script>
-      // This script runs in the head and is allowed in Azure B2C
       (function () {
+        let emailVerified = false;
+
         // Check URL for hint parameter
         function checkForHint() {
           const urlParams = new URLSearchParams(window.location.search);
-          if (urlParams.get("hint") === "this") {
-            // Show notification for thisdomain.com users
+          if (urlParams.get("hint") === "whokta") {
+            // Show notification for ahoyahoy.com users
             document.addEventListener("DOMContentLoaded", function () {
               const notification = document.querySelector(
                 ".domain-notification"
@@ -332,82 +388,202 @@
           }
         }
 
-        // Monitor for email input changes to detect thisdomain.com
+        // Email validation function
+        function validateEmail(email) {
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          return emailRegex.test(email);
+        }
+
+        // Handle continue button click
+        function handleContinue() {
+          const emailInput = document.querySelector('#api input[type="email"]');
+          const container = document.querySelector(".auth-container");
+          const subtitle = document.querySelector(".auth-subtitle");
+          const notification = document.querySelector(".domain-notification");
+
+          if (!emailInput) return;
+
+          const email = emailInput.value.toLowerCase().trim();
+
+          if (!validateEmail(email)) {
+            // Show validation error
+            showEmailError("Please enter a valid email address");
+            return;
+          }
+
+          // Clear any previous errors
+          clearEmailError();
+
+          if (email.endsWith("@ahoyahoy.com")) {
+            // Handle ahoyahoy.com domain
+            const currentUrl = new URL(window.location);
+            currentUrl.searchParams.set("hint", "whokta");
+            window.history.replaceState({}, "", currentUrl.toString());
+
+            // Show notification
+            if (notification) {
+              notification.classList.add("show");
+              notification.innerHTML =
+                "Redirecting to your organization's sign-in page...";
+            }
+
+            // Optional: Add a delay before redirect to show the message
+            setTimeout(() => {
+              // You might want to redirect to a specific IDP or handle differently
+              // For now, we'll just show the message
+              if (subtitle) {
+                subtitle.textContent = "Please wait while we redirect you...";
+              }
+            }, 1000);
+          } else {
+            // For other domains, show password field
+            emailVerified = true;
+            container.classList.add("email-verified");
+
+            // Update subtitle
+            if (subtitle) {
+              subtitle.textContent = "Now enter your password to sign in";
+            }
+
+            // Focus on password field when it appears
+            setTimeout(() => {
+              const passwordInput = document.querySelector(
+                '#api input[type="password"]'
+              );
+              if (passwordInput) {
+                passwordInput.focus();
+              }
+            }, 300);
+          }
+        }
+
+        // Show email validation error
+        function showEmailError(message) {
+          clearEmailError();
+          const emailInput = document.querySelector('#api input[type="email"]');
+          if (emailInput) {
+            const errorDiv = document.createElement("div");
+            errorDiv.className = "field-validation-error";
+            errorDiv.textContent = message;
+            emailInput.parentNode.insertBefore(
+              errorDiv,
+              emailInput.nextSibling
+            );
+            emailInput.style.borderColor = "#e74c3c";
+          }
+        }
+
+        // Clear email validation error
+        function clearEmailError() {
+          const existingError = document.querySelector(
+            ".field-validation-error"
+          );
+          if (existingError) {
+            existingError.remove();
+          }
+          const emailInput = document.querySelector('#api input[type="email"]');
+          if (emailInput) {
+            emailInput.style.borderColor = "#e1e5e9";
+          }
+        }
+
+        // Monitor for email input changes
         function monitorEmailInput() {
           document.addEventListener("DOMContentLoaded", function () {
-            // Wait for B2C to inject its controls
             setTimeout(function () {
               const emailInput = document.querySelector(
                 '#api input[type="email"]'
               );
-              if (emailInput) {
-                // Handle email validation and progressive disclosure
-                emailInput.addEventListener("blur", function () {
-                  const email = this.value.toLowerCase();
-                  const container = document.querySelector(".auth-container");
+              const apiContainer = document.getElementById("api");
 
-                  if (email && email.includes("@")) {
-                    if (email.endsWith("@thisdomain.com")) {
-                      // Add hint to URL for thisdomain.com users
-                      const currentUrl = new URL(window.location);
-                      currentUrl.searchParams.set("hint", "this");
-                      window.history.replaceState(
-                        {},
-                        "",
-                        currentUrl.toString()
-                      );
+              if (emailInput && apiContainer) {
+                // Create and insert continue button
+                const continueBtn = document.createElement("button");
+                continueBtn.type = "button";
+                continueBtn.className = "continue-btn";
+                continueBtn.textContent = "Continue";
+                continueBtn.disabled = true;
 
-                      // For thisdomain.com, you might want to redirect immediately
-                      // or show different UI - customize as needed
-                    } else {
-                      // For other domains, show password field
-                      container.classList.add("email-verified");
+                // Insert continue button after the email input
+                emailInput.parentNode.insertBefore(
+                  continueBtn,
+                  emailInput.nextSibling
+                );
 
-                      // Update subtitle to reflect next step
-                      const subtitle = document.querySelector(".auth-subtitle");
-                      if (subtitle) {
-                        subtitle.textContent =
-                          "Now enter your password to sign in";
-                      }
-                    }
-                  } else {
-                    // Invalid email - hide password field again
-                    container.classList.remove("email-verified");
+                // Handle continue button click
+                continueBtn.addEventListener("click", handleContinue);
 
-                    // Reset subtitle
-                    const subtitle = document.querySelector(".auth-subtitle");
-                    if (subtitle) {
-                      subtitle.textContent =
-                        "Sign in to your account to continue";
-                    }
-                  }
-                });
-
-                // Also check on input for real-time feedback
+                // Monitor email input for validation
                 emailInput.addEventListener("input", function () {
-                  const email = this.value.toLowerCase();
-                  const container = document.querySelector(".auth-container");
+                  const email = this.value.trim();
+                  const isValid = validateEmail(email);
 
-                  // Clear previous states
-                  container.classList.remove("email-verified");
+                  continueBtn.disabled = !isValid;
+
+                  // Clear previous states when typing
+                  const container = document.querySelector(".auth-container");
+                  if (!emailVerified) {
+                    container.classList.remove("email-verified");
+                  }
+
                   const notification = document.querySelector(
                     ".domain-notification"
                   );
-                  if (notification) {
+                  if (notification && !email.endsWith("@ahoyahoy.com")) {
                     notification.classList.remove("show");
+                  }
+
+                  // Clear errors when typing
+                  clearEmailError();
+                });
+
+                // Handle Enter key in email field
+                emailInput.addEventListener("keypress", function (e) {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    if (!continueBtn.disabled) {
+                      handleContinue();
+                    }
                   }
                 });
               }
-            }, 1000); // Wait for B2C injection
+            }, 1000);
+          });
+        }
+
+        // Prevent form submission until email is verified
+        function preventPrematureSubmission() {
+          document.addEventListener("DOMContentLoaded", function () {
+            setTimeout(function () {
+              const forms = document.querySelectorAll("#api form");
+              forms.forEach(function (form) {
+                form.addEventListener("submit", function (e) {
+                  if (!emailVerified) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    // Try to trigger continue instead
+                    const continueBtn = document.querySelector(".continue-btn");
+                    if (continueBtn && !continueBtn.disabled) {
+                      handleContinue();
+                    }
+                    return false;
+                  }
+
+                  // If we get here, allow normal submission
+                  document
+                    .querySelector(".auth-container")
+                    .classList.add("loading");
+                });
+              });
+            }, 500);
           });
         }
 
         // Enhanced form styling after B2C injection
         function enhanceB2CForm() {
           document.addEventListener("DOMContentLoaded", function () {
-            // Wait for B2C to fully load
             setTimeout(function () {
-              // Add focus effects and SSO control
               const apiContainer = document.getElementById("api");
               if (apiContainer) {
                 apiContainer.addEventListener("focusin", function (e) {
@@ -424,24 +600,10 @@
               }
 
               // Add SSO toggle functionality (for admin/debug purposes)
-              // You can trigger this via console: toggleSSO()
               window.toggleSSO = function () {
                 const container = document.querySelector(".auth-container");
                 container.classList.toggle("show-sso");
               };
-
-              // Uncomment this line if you want to show SSO by default
-              // document.querySelector('.auth-container').classList.add('show-sso');
-
-              // Monitor form submission
-              const forms = document.querySelectorAll("#api form");
-              forms.forEach(function (form) {
-                form.addEventListener("submit", function () {
-                  document
-                    .querySelector(".auth-container")
-                    .classList.add("loading");
-                });
-              });
             }, 500);
           });
         }
@@ -449,6 +611,7 @@
         // Initialize all functions
         checkForHint();
         monitorEmailInput();
+        preventPrematureSubmission();
         enhanceB2CForm();
       })();
     </script>
@@ -475,6 +638,11 @@
         />
         <h1 class="auth-title">Welcome Back</h1>
         <p class="auth-subtitle">Sign in to your account to continue</p>
+      </div>
+
+      <!-- Domain notification for ahoyahoy users -->
+      <div class="domain-notification">
+        You'll be redirected to your organization's sign-in page.
       </div>
 
       <!-- Azure B2C will inject its authentication controls here -->
