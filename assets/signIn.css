@@ -49,6 +49,14 @@ div[data-tenant-branding-background-color="true"] {
   z-index: 0;
 }
 
+/* Logo for tenant branding */
+img[data-tenant-branding-logo="true"] {
+  max-width: 200px;
+  margin: 0 auto;
+  display: block;
+  margin-bottom: 20px;
+}
+
 img {
   vertical-align: middle;
 }
