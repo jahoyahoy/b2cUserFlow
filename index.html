@@ -193,7 +193,6 @@
       #api input[type="password"] + label,
       #api label[for*="password"],
       #api .password,
-      #forgotPassword,
       #api button[type="submit"],
       #api input[type="submit"] {
         display: none !important;
@@ -201,12 +200,16 @@
         transition: all 0.3s ease !important;
       }
 
+      /* Hide all labels */
+      #api label {
+        display: none !important;
+      }
+
       /* Show password field and signin button when email-verified class is added */
       .email-verified #api input[type="password"],
       .email-verified #api input[type="password"] + label,
       .email-verified #api label[for*="password"],
       .email-verified #api .password,
-      .email-verified #forgotPassword,
       .email-verified #api button[type="submit"],
       .email-verified #api input[type="submit"] {
         display: block !important;
@@ -214,9 +217,38 @@
         animation: slideIn 0.3s ease !important;
       }
 
+      /* Keep labels hidden even when email is verified */
+      .email-verified #api label {
+        display: none !important;
+      }
+
       /* Hide continue button when password is shown */
       .email-verified .continue-btn {
         display: none !important;
+      }
+
+      /* Move forgot password below password field and show it when email is verified */
+      #forgotPassword {
+        display: none !important;
+        opacity: 0 !important;
+        transition: all 0.3s ease !important;
+        margin-top: 0.5rem !important;
+        margin-bottom: 1rem !important;
+        text-align: right !important;
+        font-size: 0.9rem !important;
+        order: 2 !important;
+      }
+
+      .email-verified #forgotPassword {
+        display: block !important;
+        opacity: 1 !important;
+        animation: slideIn 0.3s ease !important;
+      }
+
+      /* Ensure password field container allows reordering */
+      .email-verified #api .password {
+        display: flex !important;
+        flex-direction: column !important;
       }
 
       @keyframes slideIn {
@@ -248,15 +280,6 @@
         border-color: #000000 !important;
         background: white !important;
         transform: scale(1.02) !important;
-      }
-
-      /* Style B2C labels */
-      #api label {
-        display: block !important;
-        margin-bottom: 0.5rem !important;
-        color: #333 !important;
-        font-weight: 500 !important;
-        font-size: 0.9rem !important;
       }
 
       /* Style B2C buttons */
@@ -429,6 +452,22 @@
           return emailRegex.test(email);
         }
 
+        // Check if email is prefilled and update continue button
+        function checkPrefilledEmail() {
+          const emailInput = document.querySelector('#api input[type="email"]');
+          const continueBtn = document.querySelector(".continue-btn");
+
+          if (emailInput && continueBtn) {
+            const email = emailInput.value.trim();
+            const isValid = validateEmail(email);
+            continueBtn.disabled = !isValid;
+
+            if (email && isValid) {
+              debugLog(`Prefilled email detected: ${email}`);
+            }
+          }
+        }
+
         // Handle continue button click
         function handleContinue() {
           debugLog("Continue button clicked");
@@ -489,15 +528,24 @@
               subtitle.textContent = "Now enter your password to sign in";
             }
 
+            // Move forgot password link after password field
             setTimeout(() => {
               const passwordInput = document.querySelector(
                 '#api input[type="password"]'
               );
-              if (passwordInput) {
+              const forgotPassword = document.getElementById("forgotPassword");
+
+              if (passwordInput && forgotPassword) {
+                passwordInput.parentNode.insertBefore(
+                  forgotPassword,
+                  passwordInput.nextSibling
+                );
                 passwordInput.focus();
-                debugLog("Password field focused");
+                debugLog("Password field focused and forgot password moved");
               } else {
-                debugLog("Password field not found after verification");
+                debugLog(
+                  "Password field or forgot password link not found after verification"
+                );
               }
             }, 300);
           }
@@ -557,6 +605,7 @@
             // Check if continue button already exists
             if (document.querySelector(".continue-btn")) {
               debugLog("Continue button already exists");
+              checkPrefilledEmail(); // Check for prefilled email
               return true;
             }
 
@@ -573,6 +622,9 @@
               emailInput.nextSibling
             );
             debugLog("Continue button added");
+
+            // Check for prefilled email after button is added
+            checkPrefilledEmail();
 
             // Handle continue button click
             continueBtn.addEventListener("click", handleContinue);
@@ -628,7 +680,19 @@
               clearEmailError();
             });
 
-            // Handle Enter key in email field
+            // add listeners for all types of email input changes
+            emailInput.addEventListener("change", function () {
+              debugLog("Email change event triggered");
+              checkPrefilledEmail();
+            });
+
+            emailInput.addEventListener("paste", function () {
+              setTimeout(() => {
+                debugLog("Email paste event triggered");
+                checkPrefilledEmail();
+              }, 100);
+            });
+
             emailInput.addEventListener("keypress", function (e) {
               if (e.key === "Enter") {
                 e.preventDefault();
@@ -682,6 +746,9 @@
                   "Continue button not found after window load, trying again..."
                 );
                 initializeEmailMonitoring();
+              } else {
+                // Check for prefilled email on window load
+                checkPrefilledEmail();
               }
             }, 1000);
           });
