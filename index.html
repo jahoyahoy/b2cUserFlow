@@ -208,7 +208,6 @@
       /* Show password field and signin button when email-verified class is added */
       .email-verified #api input[type="password"],
       .email-verified #api input[type="password"],
-      .email-verified #api label[for*="password"],
       .email-verified #api .password,
       .email-verified #api button[type="submit"],
       .email-verified #api input[type="submit"] {
@@ -218,9 +217,9 @@
       }
 
       /* Keep labels hidden even when email is verified */
-      /* .email-verified #api label {
+      .email-verified #api label {
         display: none !important;
-      } */
+      }
 
       /* Hide continue button when password is shown */
       .email-verified .continue-btn {
