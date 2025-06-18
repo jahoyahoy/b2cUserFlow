@@ -2,18 +2,18 @@
   let emailVerified = false;
 
   // FOR CUSTOM IDP
-  const domains = ["@test.com"]; // Add more domains as needed
+  const domains = ["@test.com", "@ahoyahoy.com"]; // Add more domains as needed
   const idpHintRedirects = {
     "@ahoyahoy.com": "whokta",
     "@test.com": "testIdP",
     // Add more domains and their corresponding IDP redirects here
   };
 
-  // Check URL for hint param then if the hint param matches any IDP hint in idpHintRedirects
+  // Check URL for domain_hint param then if the domain_hint param matches any IDP hint in idpHintRedirects
   // show notification for redirect
   function checkForHint() {
     const urlParams = new URLSearchParams(window.location.search);
-    const hint = urlParams.get("hint");
+    const hint = urlParams.get("domain_hint");
     if (hint && Object.values(idpHintRedirects).some((idp) => idp === hint)) {
       // Show notification for custom idp users
       document.addEventListener("DOMContentLoaded", function () {
@@ -59,7 +59,7 @@
       if (idpHintRedirects[domain]) {
         // Redirect to the corresponding IDP
         const currentUrl = new URL(window.location);
-        currentUrl.searchParams.set("hint", idpHintRedirects[domain]);
+        currentUrl.searchParams.set("domain_hint", idpHintRedirects[domain]);
         window.history.replaceState({}, "", currentUrl.toString());
 
         // Show notification
