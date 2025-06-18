@@ -1,29 +1,14 @@
 (function () {
   let emailVerified = false;
 
-  // FOR CUSTOM IDP
-  const domains = ["@test.com", "@ahoyahoy.com"]; // Add more domains as needed
-  const idpHintRedirects = {
-    "@ahoyahoy.com": "whokta",
-    "@test.com": "testIdP",
-    // Add more domains and their corresponding IDP redirects here
-  };
+  /// Current hints:
+  // "whokta" for Western Health Okta
 
-  // Check URL for domain_hint param then if the domain_hint param matches any IDP hint in idpHintRedirects
-  // show notification for redirect
-  function checkForHint() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const hint = urlParams.get("domain_hint");
-    if (hint && Object.values(idpHintRedirects).some((idp) => idp === hint)) {
-      // Show notification for custom idp users
-      document.addEventListener("DOMContentLoaded", function () {
-        const notification = document.querySelector(".domain-notification");
-        if (notification) {
-          notification.classList.add("show");
-        }
-      });
-    }
-  }
+  // Domain configuration for custom IDP redirects
+  const domains = ["@whtest.com"]; // Add more domains as needed
+  const idpHintRedirects = {
+    "@whtest.com": "whokta",
+  };
 
   // Email validation function
   function validateEmail(email) {
@@ -31,14 +16,27 @@
     return emailRegex.test(email);
   }
 
+  // Check if email is prefilled and update continue button
+  function checkPrefilledEmail() {
+    const emailInput = document.querySelector('#api input[type="email"]');
+    const continueBtn = document.querySelector(".continue-btn");
+
+    if (emailInput && continueBtn) {
+      const email = emailInput.value.trim();
+      const isValid = validateEmail(email);
+      continueBtn.disabled = !isValid;
+    }
+  }
+
   // Handle continue button click
   function handleContinue() {
     const emailInput = document.querySelector('#api input[type="email"]');
     const container = document.querySelector(".auth-container");
     const subtitle = document.querySelector(".auth-subtitle");
-    const notification = document.querySelector(".domain-notification");
 
-    if (!emailInput) return;
+    if (!emailInput) {
+      return;
+    }
 
     const email = emailInput.value.toLowerCase().trim();
 
@@ -50,51 +48,47 @@
     // Clear any previous errors
     clearEmailError();
 
-    // FOR CUSTOM IDP
-    // THIS IS WHERE WE HANDLE DOMAIN CHECKING AND IDP REDIRECTS
+    // Check for custom IDP domains
     if (domains.some((domain) => email.endsWith(domain))) {
-      // If email matches any domain in the list
-      // add redirect hint to URL and redirect to the corresponding IDP - Azure does this based on the hint in the IDP list
       const domain = domains.find((d) => email.endsWith(d));
       if (idpHintRedirects[domain]) {
-        // Redirect to the corresponding IDP
+        // Redirect to custom IDP
         const currentUrl = new URL(window.location);
         currentUrl.searchParams.set("domain_hint", idpHintRedirects[domain]);
         window.history.replaceState({}, "", currentUrl.toString());
+        location.reload(); // reload page with appended domain_hint
 
-        // Show notification
-        if (notification) {
-          notification.classList.add("show");
-          notification.innerHTML =
+        if (subtitle) {
+          subtitle.textContent =
             "Redirecting to your organization's sign-in page...";
         }
-
-        setTimeout(() => {
-          if (subtitle) {
-            subtitle.textContent = "Please wait while we redirect you...";
-          }
-        }, 1000);
+        return;
       }
-    } else {
-      // for all other domains, follow local account flow
-      emailVerified = true;
-      container.classList.add("email-verified");
-
-      // Update subtitle
-      if (subtitle) {
-        subtitle.textContent = "Now enter your password to sign in";
-      }
-
-      // Focus on password field when it appears
-      setTimeout(() => {
-        const passwordInput = document.querySelector(
-          '#api input[type="password"]'
-        );
-        if (passwordInput) {
-          passwordInput.focus();
-        }
-      }, 300);
     }
+
+    // Regular email verification flow
+    emailVerified = true;
+    container.classList.add("email-verified");
+
+    if (subtitle) {
+      subtitle.textContent = "Now enter your password to sign in";
+    }
+
+    // Move forgot password link after password field
+    setTimeout(() => {
+      const passwordInput = document.querySelector(
+        '#api input[type="password"]'
+      );
+      const forgotPassword = document.getElementById("forgotPassword");
+
+      if (passwordInput && forgotPassword) {
+        passwordInput.parentNode.insertBefore(
+          forgotPassword,
+          passwordInput.nextSibling
+        );
+        passwordInput.focus();
+      }
+    }, 300);
   }
 
   // Show email validation error
@@ -122,20 +116,21 @@
     }
   }
 
-  // Monitor for email input changes with enhanced timing
+  // Monitor for email input changes
   function monitorEmailInput() {
-    // Multiple timing strategies to ensure B2C elements are loaded
     function initializeEmailMonitoring() {
       const emailInput = document.querySelector('#api input[type="email"]');
       const apiContainer = document.getElementById("api");
 
       if (!emailInput || !apiContainer) {
-        // If elements aren't ready, try again
-        console.log("B2C elements not ready, retrying...");
         return false;
       }
 
-      console.log("Initializing email monitoring...");
+      // Check if continue button already exists
+      if (document.querySelector(".continue-btn")) {
+        checkPrefilledEmail();
+        return true;
+      }
 
       // Create and insert continue button
       const continueBtn = document.createElement("button");
@@ -146,7 +141,9 @@
 
       // Insert continue button after the email input
       emailInput.parentNode.insertBefore(continueBtn, emailInput.nextSibling);
-      console.log("Continue button added");
+
+      // Check for prefilled email after button is added
+      checkPrefilledEmail();
 
       // Handle continue button click
       continueBtn.addEventListener("click", handleContinue);
@@ -156,53 +153,47 @@
         const email = this.value.trim();
         const isValid = validateEmail(email);
         const container = document.querySelector(".auth-container");
-        const notification = document.querySelector(".domain-notification");
         const subtitle = document.querySelector(".auth-subtitle");
 
         continueBtn.disabled = !isValid;
 
-        // If email is empty or invalid, reset everything to initial state
+        // Reset state if email is empty or invalid
         if (!email || !isValid) {
           emailVerified = false;
           container.classList.remove("email-verified");
 
-          // Reset subtitle to original text
           if (subtitle) {
             subtitle.textContent = "Sign in to your account to continue";
           }
 
-          // Hide notification
-          if (notification) {
-            notification.classList.remove("show");
-          }
-
-          // Clear errors
           clearEmailError();
           return;
         }
 
-        // If we had previously verified an email and user is changing it,
-        // reset the verified state but keep the continue button enabled
+        // Reset verified state when changing email
         if (emailVerified && isValid) {
           emailVerified = false;
           container.classList.remove("email-verified");
 
-          // Reset subtitle
           if (subtitle) {
             subtitle.textContent = "Sign in to your account to continue";
           }
         }
-        // Hide notification if not part of any domain
-        if (notification && !domains.some((domain) => email.endsWith(domain))) {
-          // FOR DOMAIN CHECKING
-          notification.classList.remove("show");
-        }
 
-        // Clear errors when typing
         clearEmailError();
       });
 
-      // Handle Enter key in email field
+      // Add listeners for all types of email input changes
+      emailInput.addEventListener("change", function () {
+        checkPrefilledEmail();
+      });
+
+      emailInput.addEventListener("paste", function () {
+        setTimeout(() => {
+          checkPrefilledEmail();
+        }, 100);
+      });
+
       emailInput.addEventListener("keypress", function (e) {
         if (e.key === "Enter") {
           e.preventDefault();
@@ -215,61 +206,50 @@
       return true;
     }
 
-    // The 3 functions below are to assist with email monitoring and making sure the continue button is added correctly
+    // Wait for DOMContentLoaded
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", function () {
+        // Try multiple times with increasing delays
+        const attempts = [100, 500, 1000, 1500, 2000, 3000];
+        let attemptIndex = 0;
 
-    // Wait for DOMContentLoaded 1
-    document.addEventListener("DOMContentLoaded", function () {
-      console.log("DOM Content Loaded");
+        function tryInitialize() {
+          if (initializeEmailMonitoring()) {
+            return;
+          }
 
-      // Try multiple times with increasing delays
-      const attempts = [500, 1000, 1500, 2000, 3000];
-      let attemptIndex = 0;
-
-      function tryInitialize() {
-        if (initializeEmailMonitoring()) {
-          console.log("Email monitoring initialized successfully");
-          return;
+          attemptIndex++;
+          if (attemptIndex < attempts.length) {
+            setTimeout(tryInitialize, attempts[attemptIndex]);
+          }
         }
 
-        attemptIndex++;
-        if (attemptIndex < attempts.length) {
-          console.log(
-            `Attempt ${attemptIndex + 1} in ${attempts[attemptIndex]}ms`
-          );
-          setTimeout(tryInitialize, attempts[attemptIndex]);
-        } else {
-          console.error(
-            "Failed to initialize email monitoring after all attempts"
-          );
-        }
-      }
+        tryInitialize();
+      });
+    } else {
+      setTimeout(() => initializeEmailMonitoring(), 100);
+    }
 
-      tryInitialize();
-    });
-
-    // Also try when page is fully loaded 2
+    // Also try when page is fully loaded
     window.addEventListener("load", function () {
-      console.log("Window loaded");
       setTimeout(() => {
         if (!document.querySelector(".continue-btn")) {
-          console.log(
-            "Continue button not found after window load, trying again..."
-          );
           initializeEmailMonitoring();
+        } else {
+          checkPrefilledEmail();
         }
       }, 1000);
     });
 
-    // Watch for B2C API container changes 3
+    // Watch for B2C API container changes
     if (window.MutationObserver) {
       const observer = new MutationObserver(function (mutations) {
         mutations.forEach(function (mutation) {
-          if (mutation.type === "childList") {
+          if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
             const emailInput = document.querySelector(
               '#api input[type="email"]'
             );
             if (emailInput && !document.querySelector(".continue-btn")) {
-              console.log("B2C elements detected via mutation observer");
               setTimeout(() => initializeEmailMonitoring(), 500);
             }
           }
@@ -295,13 +275,13 @@
     document.addEventListener("DOMContentLoaded", function () {
       setTimeout(function () {
         const forms = document.querySelectorAll("#api form");
+
         forms.forEach(function (form) {
           form.addEventListener("submit", function (e) {
             if (!emailVerified) {
               e.preventDefault();
               e.stopPropagation();
 
-              // Try to trigger continue instead
               const continueBtn = document.querySelector(".continue-btn");
               if (continueBtn && !continueBtn.disabled) {
                 handleContinue();
@@ -309,7 +289,6 @@
               return false;
             }
 
-            // If we get here, allow normal submission
             document.querySelector(".auth-container").classList.add("loading");
           });
         });
@@ -317,37 +296,7 @@
     });
   }
 
-  // Enhanced form styling after B2C injection
-  function enhanceB2CForm() {
-    document.addEventListener("DOMContentLoaded", function () {
-      setTimeout(function () {
-        const apiContainer = document.getElementById("api");
-        if (apiContainer) {
-          apiContainer.addEventListener("focusin", function (e) {
-            if (e.target.matches("input")) {
-              apiContainer.classList.add("focused");
-            }
-          });
-
-          apiContainer.addEventListener("focusout", function (e) {
-            if (e.target.matches("input")) {
-              apiContainer.classList.remove("focused");
-            }
-          });
-        }
-
-        // Add SSO toggle functionality (for admin/debug purposes)
-        window.toggleSSO = function () {
-          const container = document.querySelector(".auth-container");
-          container.classList.toggle("show-sso");
-        };
-      }, 500);
-    });
-  }
-
   // Initialize all functions
-  checkForHint();
   monitorEmailInput();
   preventPrematureSubmission();
-  enhanceB2CForm();
 })();

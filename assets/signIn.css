@@ -225,7 +225,7 @@ img {
 
 /* Style B2C labels */
 #api label {
-  display: block !important;
+  display: none !important;
   margin-bottom: 0.5rem !important;
   color: #333 !important;
   font-weight: 500 !important;
