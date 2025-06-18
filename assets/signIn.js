@@ -5,18 +5,24 @@
   // "whokta" for Western Health Okta
 
   // Domain configuration for custom IDP redirects
-  const domains = ["@whtest.com"]; // Add more domains as needed
-  const idpHintRedirects = {
+  // const domains = ["@whtest.com"]; // Add more domains as needed
+  // const idpHintRedirects = {
+  //   "@whtest.com": "whokta",
+  // };
+
+  // e.g. { "@domain.com" : "idpHint"}
+  // hints are set against IDPs in azure
+  const idpRedirects = {
     "@whtest.com": "whokta",
   };
 
-  // Email validation function
+  // validate email
   function validateEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   }
 
-  // Check if email is prefilled and update continue button
+  // checks if email is prefilled by password manager/browser
   function checkPrefilledEmail() {
     const emailInput = document.querySelector('#api input[type="email"]');
     const continueBtn = document.querySelector(".continue-btn");
@@ -28,8 +34,8 @@
     }
   }
 
-  // Handle continue button click
   function handleContinue() {
+    // get elements
     const emailInput = document.querySelector('#api input[type="email"]');
     const container = document.querySelector(".auth-container");
     const subtitle = document.querySelector(".auth-subtitle");
@@ -49,24 +55,20 @@
     clearEmailError();
 
     // Check for custom IDP domains
-    if (domains.some((domain) => email.endsWith(domain))) {
-      const domain = domains.find((d) => email.endsWith(d));
-      if (idpHintRedirects[domain]) {
+    if (Object.keys(idpRedirects).some((domain) => email.endsWith(domain))) {
+      const domain = Object.keys(idpRedirects).find((d) => email.endsWith(d));
+      if (idpRedirects[domain]) {
         // Redirect to custom IDP
         const currentUrl = new URL(window.location);
-        currentUrl.searchParams.set("domain_hint", idpHintRedirects[domain]);
+        currentUrl.searchParams.set("domain_hint", idpRedirects[domain]);
         window.history.replaceState({}, "", currentUrl.toString());
         location.reload(); // reload page with appended domain_hint
 
-        if (subtitle) {
-          subtitle.textContent =
-            "Redirecting to your organization's sign-in page...";
-        }
         return;
       }
     }
 
-    // Regular email verification flow
+    // all other email domains will use default B2C sign-in flow
     emailVerified = true;
     container.classList.add("email-verified");
 

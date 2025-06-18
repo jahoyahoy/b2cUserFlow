@@ -153,6 +153,28 @@ img {
   box-shadow: none !important;
 }
 
+/* Keep labels hidden even when email is verified */
+.email-verified #api label {
+  display: none !important;
+}
+
+/* Hide continue button when password is shown */
+.email-verified .continue-btn {
+  display: none !important;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+  .auth-container {
+    padding: 30px 20px;
+    margin: 10px;
+  }
+
+  .auth-title {
+    font-size: 1.5rem;
+  }
+}
+
 /* Domain notification for custom idp users */
 .domain-notification {
   background: var(--color-blue-bg);
@@ -172,7 +194,7 @@ img {
 
 /* OUR CSS ENDS HERE */
 
-/* CSS FOR AZURE API STARTS HERE */
+/* CSS FOR AZURE API ELEMENTS STARTS HERE */
 
 /* Azure B2C API container */
 #api {
@@ -228,16 +250,6 @@ img {
 .email-verified #api input[type="submit"] {
   display: block !important;
   opacity: 1 !important;
-}
-
-/* Keep labels hidden even when email is verified */
-.email-verified #api label {
-  display: none !important;
-}
-
-/* Hide continue button when password is shown */
-.email-verified .continue-btn {
-  display: none !important;
 }
 
 /* Move forgot password below password field and show it when email is verified */
@@ -321,18 +333,6 @@ img {
 #api .claims-provider-list-buttons,
 #api .intro p {
   display: none !important;
-}
-
-/* Responsive design */
-@media (max-width: 480px) {
-  .auth-container {
-    padding: 30px 20px;
-    margin: 10px;
-  }
-
-  .auth-title {
-    font-size: 1.5rem;
-  }
 }
 
 /* Hide B2C default container styling */
