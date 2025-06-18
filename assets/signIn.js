@@ -51,7 +51,6 @@
       return;
     }
 
-    // Clear any previous errors
     clearEmailError();
 
     // Check for custom IDP domains
@@ -68,7 +67,7 @@
       }
     }
 
-    // all other email domains will use default B2C sign-in flow
+    // All other email domains will use default B2C sign-in flow
     emailVerified = true;
     container.classList.add("email-verified");
 
@@ -76,24 +75,22 @@
       subtitle.textContent = "Now enter your password to sign in";
     }
 
-    // Move forgot password link after password field
-    setTimeout(() => {
-      const passwordInput = document.querySelector(
-        '#api input[type="password"]'
-      );
-      const forgotPassword = document.getElementById("forgotPassword");
+    // Some hacky stuff to move the forgot password link to below password input
+    // once the password input is showing
+    const passwordInput = document.querySelector('#api input[type="password"]');
+    const forgotPassword = document.getElementById("forgotPassword");
 
-      if (passwordInput && forgotPassword) {
-        passwordInput.parentNode.insertBefore(
-          forgotPassword,
-          passwordInput.nextSibling
-        );
-        passwordInput.focus();
-      }
-    }, 300);
+    if (passwordInput && forgotPassword) {
+      passwordInput.parentNode.insertBefore(
+        forgotPassword,
+        passwordInput.nextSibling
+      );
+      passwordInput.focus();
+    }
+    setTimeout(() => {}, 300); // possibly remove this if the hacky stuff works above
   }
 
-  // Show email validation error
+  // show errors above email input
   function showEmailError(message) {
     clearEmailError();
     const emailInput = document.querySelector('#api input[type="email"]');
@@ -106,7 +103,7 @@
     }
   }
 
-  // Clear email validation error
+  // use this to clear email error messages
   function clearEmailError() {
     const existingError = document.querySelector(".field-validation-error");
     if (existingError) {
@@ -118,7 +115,10 @@
     }
   }
 
-  // Monitor for email input changes
+  // this function helps handle email input and continue button logic
+  // monitors the email input field, validates the email format
+  // and manages the continue button state for Azure B2C authentication flows.
+
   function monitorEmailInput() {
     function initializeEmailMonitoring() {
       const emailInput = document.querySelector('#api input[type="email"]');
@@ -134,23 +134,23 @@
         return true;
       }
 
+      const continueBtn = document.getElementById("continueBtn");
       // Create and insert continue button
-      const continueBtn = document.createElement("button");
-      continueBtn.type = "button";
-      continueBtn.className = "continue-btn";
-      continueBtn.textContent = "Continue";
-      continueBtn.disabled = true;
+      // const continueBtn = document.createElement("button");
+      // continueBtn.type = "button";
+      // continueBtn.className = "continue-btn";
+      // continueBtn.textContent = "Continue";
+      // continueBtn.disabled = true;
 
       // Insert continue button after the email input
-      emailInput.parentNode.insertBefore(continueBtn, emailInput.nextSibling);
+      //emailInput.parentNode.insertBefore(continueBtn, emailInput.nextSibling);
 
       // Check for prefilled email after button is added
       checkPrefilledEmail();
 
-      // Handle continue button click
       continueBtn.addEventListener("click", handleContinue);
 
-      // Monitor email input for validation
+      // monitors email input for validation
       emailInput.addEventListener("input", function () {
         const email = this.value.trim();
         const isValid = validateEmail(email);

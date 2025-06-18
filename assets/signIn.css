@@ -327,7 +327,7 @@ img {
   font-weight: 500 !important;
 }
 
-/* Hide SSO buttons by default */
+/* Hide sso buttons and divider line a */
 #api .divider,
 #api .accountButton,
 #api .claims-provider-list-buttons,
