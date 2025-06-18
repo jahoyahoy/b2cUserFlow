@@ -59,9 +59,6 @@ img[data-tenant-branding-logo="true"] {
 
 img {
   vertical-align: middle;
-}
-
-img {
   border: 0;
 }
 
@@ -75,6 +72,8 @@ img {
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   text-align: center;
+  position: relative;
+  z-index: 1;
 }
 
 .auth-header {
@@ -94,6 +93,18 @@ img {
   font-size: 0.95rem;
   line-height: 1.5;
   transition: all 0.3s ease;
+}
+
+/* Debug info */
+.debug-info {
+  background: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 10px;
+  margin: 10px 0;
+  font-size: 12px;
+  text-align: left;
+  color: #666;
 }
 
 /* Custom continue button for email verification */
@@ -142,13 +153,12 @@ img {
   display: block;
 }
 
-/* THIS IS WHERE OUR CSS ENDS */
-
-/* Azure B2C API container - this is where B2C injects its controls i.e. everything within the "api" div */
+/* Azure B2C API container */
 #api {
   margin-top: 1rem;
 }
 
+/* Hide B2C default intro/heading */
 #api .intro h2 {
   display: none;
 }
@@ -174,10 +184,9 @@ img {
 
 /* Initially hide password field, signin button and related elements */
 #api input[type="password"],
-#api input[type="password"] + label,
+#api input[type="password"],
 #api label[for*="password"],
 #api .password,
-#forgotPassword,
 #api button[type="submit"],
 #api input[type="submit"] {
   display: none !important;
@@ -185,12 +194,15 @@ img {
   transition: all 0.3s ease !important;
 }
 
+/* Hide all labels */
+#api label {
+  display: none !important;
+}
+
 /* Show password field and signin button when email-verified class is added */
 .email-verified #api input[type="password"],
-.email-verified #api input[type="password"] + label,
-.email-verified #api label[for*="password"],
+.email-verified #api input[type="password"],
 .email-verified #api .password,
-.email-verified #forgotPassword,
 .email-verified #api button[type="submit"],
 .email-verified #api input[type="submit"] {
   display: block !important;
@@ -198,12 +210,52 @@ img {
   animation: slideIn 0.3s ease !important;
 }
 
+/* Keep labels hidden even when email is verified */
+.email-verified #api label {
+  display: none !important;
+}
+
 /* Hide continue button when password is shown */
 .email-verified .continue-btn {
   display: none !important;
 }
 
+/* Move forgot password below password field and show it when email is verified */
+#forgotPassword {
+  display: none !important;
+  opacity: 0 !important;
+  transition: all 0.3s ease !important;
+  margin-top: 0.5rem !important;
+  margin-bottom: 1rem !important;
+  text-align: right !important;
+  font-size: 0.9rem !important;
+  order: 2 !important;
+}
+
+.email-verified #forgotPassword {
+  display: block !important;
+  opacity: 1 !important;
+  animation: slideIn 0.3s ease !important;
+}
+
+/* Ensure password field container allows reordering */
+.email-verified #api .password {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
 @keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
   from {
     opacity: 0;
     transform: translateY(-10px);
@@ -221,15 +273,6 @@ img {
   border-color: #000000 !important;
   background: white !important;
   transform: scale(1.02) !important;
-}
-
-/* Style B2C labels */
-#api label {
-  display: none !important;
-  margin-bottom: 0.5rem !important;
-  color: #333 !important;
-  font-weight: 500 !important;
-  font-size: 0.9rem !important;
 }
 
 /* Style B2C buttons */
@@ -283,57 +326,6 @@ img {
   display: none !important;
 }
 
-/* Show SSO buttons only when explicitly enabled */
-.show-sso #api .accountButton,
-.show-sso #api .claims-provider-list-buttons {
-  display: block !important;
-  width: 100% !important;
-  padding: 12px 16px !important;
-  margin-bottom: 8px !important;
-  border: 2px solid #e1e5e9 !important;
-  border-radius: 12px !important;
-  background: white !important;
-  color: #333 !important;
-  font-size: 0.95rem !important;
-  transition: all 0.3s ease !important;
-}
-
-.show-sso #api .accountButton:hover {
-  border-color: #667eea !important;
-  background: rgba(102, 126, 234, 0.05) !important;
-  transform: translateY(-1px) !important;
-}
-
-/* Style divider */
-#api .divider {
-  text-align: center !important;
-  margin: 1.5rem 0 !important;
-  position: relative !important;
-}
-
-#api .divider::before {
-  content: "" !important;
-  position: absolute !important;
-  top: 50% !important;
-  left: 0 !important;
-  right: 0 !important;
-  height: 1px !important;
-  background: #e1e5e9 !important;
-}
-
-#api .divider span {
-  background: rgba(255, 255, 255, 0.95) !important;
-  padding: 0 1rem !important;
-  color: #666 !important;
-  font-size: 0.9rem !important;
-}
-
-/* Loading state */
-.loading {
-  opacity: 0.7;
-  pointer-events: none;
-}
-
 /* Responsive design */
 @media (max-width: 480px) {
   .auth-container {
@@ -343,17 +335,6 @@ img {
 
   .auth-title {
     font-size: 1.5rem;
-  }
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 
