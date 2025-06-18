@@ -1,3 +1,32 @@
+:root {
+  --color-primary: #000000;
+  --color-white: #fff;
+  --color-black: #000;
+  --color-grey-dark: #333;
+  --color-grey-medium: #666;
+  --color-grey-light: #e1e5e9;
+  --color-grey-bg: rgba(248, 249, 250, 0.8);
+  --color-blue: #3498db;
+  --color-blue-bg: rgba(52, 152, 219, 0.1);
+  --color-blue-border: rgba(52, 152, 219, 0.2);
+  --color-error: #e74c3c;
+  --color-error-bg: rgba(231, 76, 60, 0.1);
+  --color-error-border: rgba(231, 76, 60, 0.2);
+  --color-disabled: #ccc;
+
+  --font-family-main: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-family-alt: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+
+  --border-radius-small: 2px;
+  --border-radius-medium: 8px;
+  --border-radius-large: 12px;
+
+  --box-shadow-main: 0 20px 40px rgba(0, 0, 0, 0.1);
+  --box-shadow-hover: 0 10px 20px rgba(114, 21, 21, 0.3);
+
+  --backdrop-blur: blur(20px);
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -5,12 +34,12 @@
 }
 
 body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: var(--font-family-main);
   font-size: 14px;
   line-height: 1.42857143;
-  color: #333;
+  color: var(--color-grey-dark);
   background-attachment: fixed;
-  background-color: #fff;
+  background-color: var(--color-white);
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -64,12 +93,12 @@ img {
 
 .auth-container {
   background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  border-radius: 2px;
+  backdrop-filter: var(--backdrop-blur);
+  border-radius: var(--border-radius-small);
   padding: 40px;
   max-width: 450px;
   width: 100%;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--box-shadow-main);
   border: 1px solid rgba(255, 255, 255, 0.2);
   text-align: center;
   position: relative;
@@ -83,28 +112,16 @@ img {
 
 .auth-title {
   font-size: 1.8rem;
-  color: #333;
+  color: var(--color-grey-dark);
   font-weight: 600;
   margin-bottom: 0.5rem;
 }
 
 .auth-subtitle {
-  color: #666;
+  color: var(--color-grey-medium);
   font-size: 0.95rem;
   line-height: 1.5;
   transition: all 0.3s ease;
-}
-
-/* Debug info */
-.debug-info {
-  background: #f0f0f0;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 10px;
-  margin: 10px 0;
-  font-size: 12px;
-  text-align: left;
-  color: #666;
 }
 
 /* Custom continue button for email verification */
@@ -112,25 +129,25 @@ img {
   width: 100% !important;
   padding: 12px 24px !important;
   border: none !important;
-  border-radius: 12px !important;
+  border-radius: var(--border-radius-large) !important;
   font-size: 1rem !important;
   cursor: pointer !important;
   transition: all 0.3s ease !important;
   font-weight: 500 !important;
-  background: #000000 !important;
-  color: white !important;
+  background: var(--color-primary) !important;
+  color: var(--color-white) !important;
   margin-top: 1rem !important;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif !important;
+  font-family: var(--font-family-alt) !important;
   display: block !important;
 }
 
 .continue-btn:hover {
   transform: translateY(-2px) !important;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: var(--box-shadow-hover) !important;
 }
 
 .continue-btn:disabled {
-  background: #ccc !important;
+  background: var(--color-disabled) !important;
   cursor: not-allowed !important;
   transform: none !important;
   box-shadow: none !important;
@@ -138,11 +155,11 @@ img {
 
 /* Domain notification for custom idp users */
 .domain-notification {
-  background: rgba(52, 152, 219, 0.1);
-  border: 1px solid rgba(52, 152, 219, 0.2);
-  border-radius: 8px;
+  background: var(--color-blue-bg);
+  border: 1px solid var(--color-blue-border);
+  border-radius: var(--border-radius-medium);
   padding: 12px;
-  color: #3498db;
+  color: var(--color-blue);
   font-size: 0.9rem;
   margin-bottom: 1rem;
   display: none;
@@ -152,6 +169,10 @@ img {
 .domain-notification.show {
   display: block;
 }
+
+/* OUR CSS ENDS HERE */
+
+/* CSS FOR AZURE API STARTS HERE */
 
 /* Azure B2C API container */
 #api {
@@ -173,13 +194,13 @@ img {
 #api input[type="text"] {
   width: 100% !important;
   padding: 12px 16px !important;
-  border: 2px solid #e1e5e9 !important;
-  border-radius: 2px !important;
+  border: 2px solid var(--color-grey-light) !important;
+  border-radius: var(--border-radius-small) !important;
   font-size: 1rem !important;
   transition: all 0.3s ease !important;
-  background: rgba(248, 249, 250, 0.8) !important;
+  background: var(--color-grey-bg) !important;
   margin-bottom: 1rem !important;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif !important;
+  font-family: var(--font-family-alt) !important;
 }
 
 /* Initially hide password field, signin button and related elements */
@@ -207,7 +228,6 @@ img {
 .email-verified #api input[type="submit"] {
   display: block !important;
   opacity: 1 !important;
-  animation: slideIn 0.3s ease !important;
 }
 
 /* Keep labels hidden even when email is verified */
@@ -235,7 +255,6 @@ img {
 .email-verified #forgotPassword {
   display: block !important;
   opacity: 1 !important;
-  animation: slideIn 0.3s ease !important;
 }
 
 /* Ensure password field container allows reordering */
@@ -244,34 +263,12 @@ img {
   flex-direction: column !important;
 }
 
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 #api input[type="email"]:focus,
 #api input[type="password"]:focus,
 #api input[type="text"]:focus {
   outline: none !important;
-  border-color: #000000 !important;
-  background: white !important;
+  border-color: var(--color-primary) !important;
+  background: var(--color-white) !important;
   transform: scale(1.02) !important;
 }
 
@@ -281,38 +278,38 @@ img {
   width: 100% !important;
   padding: 12px 24px !important;
   border: none !important;
-  border-radius: 12px !important;
+  border-radius: var(--border-radius-large) !important;
   font-size: 1rem !important;
   cursor: pointer !important;
   transition: all 0.3s ease !important;
   font-weight: 500 !important;
-  background: #000000 !important;
-  color: white !important;
+  background: var(--color-primary) !important;
+  color: var(--color-white) !important;
   margin-top: 1rem !important;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif !important;
+  font-family: var(--font-family-alt) !important;
 }
 
 #api button:hover,
 #api input[type="submit"]:hover {
   transform: translateY(-2px) !important;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: var(--box-shadow-hover) !important;
 }
 
 /* Style error messages */
 #api .error,
 #api .alert {
-  background: rgba(231, 76, 60, 0.1) !important;
-  border: 1px solid rgba(231, 76, 60, 0.2) !important;
-  border-radius: 8px !important;
+  background: var(--color-error-bg) !important;
+  border: 1px solid var(--color-error-border) !important;
+  border-radius: var(--border-radius-medium) !important;
   padding: 12px !important;
-  color: #e74c3c !important;
+  color: var(--color-error) !important;
   font-size: 0.9rem !important;
   margin-bottom: 1rem !important;
 }
 
 /* Style validation errors */
 #api .field-validation-error {
-  color: #e74c3c !important;
+  color: var(--color-error) !important;
   font-size: 0.85rem !important;
   margin-top: 0.5rem !important;
   font-weight: 500 !important;
