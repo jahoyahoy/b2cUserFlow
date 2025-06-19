@@ -103,8 +103,19 @@
   // use this to clear error messages
   function clearErrors() {
     const azureError = document.querySelector("#api .error"); // get azure error div
+
+    if (!azureError) {
+      return;
+    }
+    console.log("error", azureError);
+    console.log("aria-hidden", azureError.ariaHidden);
+
+    const aria = azureError.getAttribute("aria-hidden");
+
+    console.log("aria-hidden getAttribute", aria);
+
     // hide azure error
-    if (azureError && azureError.ariaHidden !== "true") {
+    if (azureError.ariaHidden !== "true") {
       azureError.setAttribute("aria-hidden", "true");
     }
   }

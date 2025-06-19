@@ -135,7 +135,7 @@ img {
   transition: all 0.3s ease;
 }
 
-/* Custom continue button for email verification */
+/* continue button for email verification */
 .continue-btn {
   width: 100% !important;
   padding: 12px 24px !important;
@@ -164,7 +164,7 @@ img {
   box-shadow: none !important;
 }
 
-/* Hide continue button when password is shown */
+/* hides continue button when password is shown */
 .email-verified .continue-btn {
   display: none !important;
 }
