@@ -68,16 +68,16 @@
 
     // Some hacky stuff to move the forgot password link to below password input
     // once the password input is showing
-    // const passwordInput = document.getElementById("password");
-    // const forgotPassword = document.getElementById("forgotPassword");
+    const passwordInput = document.getElementById("password");
+    const forgotPassword = document.getElementById("forgotPassword");
 
-    // if (passwordInput && forgotPassword) {
-    //   passwordInput.parentNode.insertBefore(
-    //     forgotPassword,
-    //     passwordInput.nextSibling
-    //   );
-    //   passwordInput.focus();
-    // }
+    if (passwordInput && forgotPassword) {
+      passwordInput.parentNode.insertBefore(
+        forgotPassword,
+        passwordInput.nextSibling
+      );
+      passwordInput.focus();
+    }
   }
 
   // show errors above email input

@@ -206,6 +206,7 @@ img {
 
 /* hide password field, signin button and related elements */
 #api #password,
+#api #forgotPassword,
 #api button[type="submit"],
 #api input[type="submit"] {
   display: none !important;
@@ -220,34 +221,18 @@ img {
 
 /* show password field and signin button when email-verified class is added */
 .email-verified #api #password,
+.email-verified #api #forgotPassword,
 .email-verified #api button[type="submit"],
 .email-verified #api input[type="submit"] {
   display: block !important;
   opacity: 1 !important;
 }
 
-/* Move forgot password below password field and show it when email is verified */
-#forgotPassword {
-  display: none !important;
-  opacity: 0 !important;
-  transition: all 0.3s ease !important;
-  margin-top: 0.5rem !important;
-  margin-bottom: 1rem !important;
-  text-align: right !important;
-  font-size: 0.9rem !important;
-  order: 2 !important;
-}
-
-.email-verified #forgotPassword {
-  display: block !important;
-  opacity: 1 !important;
-}
-
 /* for password field container to allow reordering */
-.email-verified #api #password {
+/* .email-verified #api #password {
   display: flex !important;
   flex-direction: column !important;
-}
+} */
 
 #api #email:focus,
 #api #password:focus {
