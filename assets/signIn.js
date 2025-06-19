@@ -90,11 +90,12 @@
       return;
     }
 
-    const errorTextNode = azureError.firstChild;
+    const errorTextNode = azureError.firstChild; // get the first child of the error div, which is the text node
 
     if (azureError.ariaHidden !== "false") {
       errorTextNode.textContent = message; // update azure error text
-      azureError.setAttribute("aria-hidden", "false"); // hide azure error
+      azureError.setAttribute("aria-hidden", "false"); // show azure error
+      azureError.setAttribute("style", "display: block;"); // show the error div
     } else {
       errorTextNode.textContent = message; // update azure error text
     }
@@ -117,6 +118,7 @@
     // hide azure error
     if (azureError.ariaHidden !== "true") {
       azureError.setAttribute("aria-hidden", "true");
+      azureError.setAttribute("style", "display: none;"); // hide the error div
     }
   }
 
@@ -203,16 +205,16 @@
       if (!initialiseListeners()) {
         retryInitialise();
       }
+    }
 
-      // sometimes listeners don't get attached properly on page load
-      // so we retry until they do
-      function retryInitialise() {
-        setTimeout(() => {
-          if (!initialiseListeners()) {
-            retryInitialise();
-          }
-        }, 1000);
-      }
+    // sometimes listeners don't get attached properly on page load
+    // so we retry until they do
+    function retryInitialise() {
+      setTimeout(() => {
+        if (!initialiseListeners()) {
+          retryInitialise();
+        }
+      }, 1000);
     }
   }
 
