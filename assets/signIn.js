@@ -108,12 +108,8 @@
     if (!azureError) {
       return;
     }
-    console.log("error", azureError);
-    console.log("aria-hidden", azureError.ariaHidden);
 
     const aria = azureError.getAttribute("aria-hidden");
-
-    console.log("aria-hidden getAttribute", aria);
 
     // hide azure error
     if (azureError.ariaHidden !== "true") {
