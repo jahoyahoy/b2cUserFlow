@@ -92,9 +92,9 @@
 
     const errorTextNode = azureError.firstChild;
 
-    if (azureError.ariaHidden === "true") {
+    if (azureError.ariaHidden !== "false") {
       errorTextNode.textContent = message; // update azure error text
-      azureError.ariaHidden = "false"; // hide azure error
+      azureError.setAttribute("aria-hidden", "false"); // hide azure error
     } else {
       errorTextNode.textContent = message; // update azure error text
     }
@@ -105,7 +105,7 @@
     const azureError = document.querySelector("#api .error"); // get azure error div
     // hide azure error
     if (azureError && azureError.ariaHidden !== "true") {
-      azureError.ariaHidden = "true";
+      azureError.setAttribute("aria-hidden", "true");
     }
   }
 
