@@ -109,8 +109,6 @@
       return;
     }
 
-    const aria = azureError.getAttribute("aria-hidden");
-
     // hide azure error
     if (azureError.ariaHidden !== "true") {
       azureError.setAttribute("aria-hidden", "true");
