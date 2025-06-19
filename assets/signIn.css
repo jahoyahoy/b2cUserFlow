@@ -53,10 +53,12 @@ body {
 }
 
 a {
+  color: var(--color-blue);
   background-color: transparent;
 }
 
 a:hover {
+  color: rgba(6, 156, 243, 0.63);
   outline: 0;
 }
 

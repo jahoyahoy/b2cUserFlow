@@ -87,7 +87,6 @@
     if (emailInput) {
       const errorDiv = document.createElement("div");
       errorDiv.className = "field-validation-error";
-      errorDiv.id = "emailError";
       errorDiv.textContent = message;
       emailInput.parentNode.insertBefore(errorDiv, emailInput.nextSibling);
       emailInput.style.borderColor = "#e74c3c";
@@ -95,19 +94,11 @@
   }
 
   // use this to clear email error messages
-  // this also handles clearing azures own error messages
   function clearEmailError() {
-    const existingError = document.getElementById("emailError");
-    const azureError = document.querySelector(".error pageLevel");
+    const existingError = document.querySelector(".field-validation-error");
     if (existingError) {
       existingError.remove();
     }
-
-    // hide azure error
-    if (azureError.ariaHidden !== "true") {
-      azureError.ariaHidden = true;
-    }
-
     const emailInput = document.getElementById("email");
     if (emailInput) {
       emailInput.style.borderColor = "#e1e5e9";
