@@ -25,7 +25,7 @@
     </div>
 
     <!-- Main Auth Container - This is where we put our stuff in -->
-    <div class="auth-container">
+    <div id="auth-container" class="auth-container">
       <div class="auth-header">
         <img
           class="companyLogo"
@@ -34,7 +34,9 @@
           alt="Company Logo"
         />
         <h1 class="auth-title">Welcome Back</h1>
-        <p class="auth-subtitle">Sign in to your account to continue</p>
+        <p id="auth-subtext" class="auth-subtext">
+          Sign in to your account to continue
+        </p>
       </div>
 
       <!-- Azure B2C will inject its authentication controls here - we can manipulate this with js/css -->

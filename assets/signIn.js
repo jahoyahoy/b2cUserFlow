@@ -36,9 +36,9 @@
 
   function handleContinue() {
     // get elements
-    const emailInput = document.querySelector('#api input[type="email"]');
-    const container = document.querySelector(".auth-container");
-    const subtitle = document.querySelector(".auth-subtitle");
+    const emailInput = document.getElementById("email");
+    const container = document.getElementById("auth-container");
+    const subtitle = document.getElementById("auth-subtext");
 
     if (!emailInput) {
       return;
@@ -77,7 +77,7 @@
 
     // Some hacky stuff to move the forgot password link to below password input
     // once the password input is showing
-    const passwordInput = document.querySelector('#api input[type="password"]');
+    const passwordInput = document.getElementById("password");
     const forgotPassword = document.getElementById("forgotPassword");
 
     if (passwordInput && forgotPassword) {
@@ -93,7 +93,7 @@
   // show errors above email input
   function showEmailError(message) {
     clearEmailError();
-    const emailInput = document.querySelector('#api input[type="email"]');
+    const emailInput = document.getElementById("email");
     if (emailInput) {
       const errorDiv = document.createElement("div");
       errorDiv.className = "field-validation-error";
@@ -109,55 +109,36 @@
     if (existingError) {
       existingError.remove();
     }
-    const emailInput = document.querySelector('#api input[type="email"]');
+    const emailInput = document.getElementById("email");
     if (emailInput) {
       emailInput.style.borderColor = "#e1e5e9";
     }
   }
 
-  // this function helps handle email input and continue button logic
-  // monitors the email input field, validates the email format
-  // and manages the continue button state for Azure B2C authentication flows.
-
+  // this function waits for the page/document to be fully loaded then initializes the listeners for the form
   function monitorEmailInput() {
     // this function initializes all the listeners for the elements - is triggered once the content is loaded
 
     function initializeEmailMonitoring() {
-      const emailInput = document.querySelector('#api input[type="email"]');
+      const emailInput = document.getElementById("email");
       const apiContainer = document.getElementById("api");
 
       if (!emailInput || !apiContainer) {
         return false;
       }
-
-      // // Check if continue button already exists
-      // if (document.querySelector(".continue-btn")) {
-      //   checkPrefilledEmail();
-      //   return true;
-      // }
-
       const continueBtn = document.getElementById("continueBtn");
-      // Create and insert continue button
-      // const continueBtn = document.createElement("button");
-      // continueBtn.type = "button";
-      // continueBtn.className = "continue-btn";
-      // continueBtn.textContent = "Continue";
-      // continueBtn.disabled = true;
 
-      // Insert continue button after the email input
-      //emailInput.parentNode.insertBefore(continueBtn, emailInput.nextSibling);
-
-      // Check for prefilled email after button is added
+      // check for prefilled email after page is loaded
       checkPrefilledEmail();
 
       continueBtn.addEventListener("click", handleContinue);
 
-      // monitors email input for validation
+      // listener email input
       emailInput.addEventListener("input", function () {
         const email = this.value.trim();
         const isValid = validateEmail(email);
-        const container = document.querySelector(".auth-container");
-        const subtitle = document.querySelector(".auth-subtitle");
+        const container = document.getElementById("auth-container");
+        const subtitle = document.getElementById("auth-subtext");
 
         continueBtn.disabled = !isValid;
 
@@ -187,7 +168,7 @@
         clearEmailError();
       });
 
-      // Add listeners for all types of email input changes
+      // add listeners for all types of email input changes
       emailInput.addEventListener("change", function () {
         checkPrefilledEmail();
       });
@@ -211,27 +192,32 @@
     }
 
     // Wait for DOMContentLoaded
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", function () {
-        // Try multiple times with increasing delays
-        const attempts = [100, 500, 1000, 1500, 2000, 3000];
-        let attemptIndex = 0;
+    // if (document.readyState === "loading") {
+    //   document.addEventListener("DOMContentLoaded", function () {
+    //     // Try multiple times with increasing delays
+    //     const attempts = [100, 500, 1000, 1500, 2000, 3000];
+    //     let attemptIndex = 0;
 
-        function tryInitialize() {
-          if (initializeEmailMonitoring()) {
-            return;
-          }
+    //     function tryInitialize() {
+    //       if (initializeEmailMonitoring()) {
+    //         return;
+    //       }
 
-          attemptIndex++;
-          if (attemptIndex < attempts.length) {
-            setTimeout(tryInitialize, attempts[attemptIndex]);
-          }
-        }
+    //       attemptIndex++;
+    //       if (attemptIndex < attempts.length) {
+    //         setTimeout(tryInitialize, attempts[attemptIndex]);
+    //       }
+    //     }
 
-        tryInitialize();
-      });
-    } else {
-      setTimeout(() => initializeEmailMonitoring(), 100);
+    //     tryInitialize();
+    //   });
+    // } else {
+    //   setTimeout(() => initializeEmailMonitoring(), 100);
+    // }
+
+    if (document.readyState === "complete") {
+      // If the document is already loaded, try to initialize immediately
+      initializeEmailMonitoring();
     }
 
     // // Also try when page is fully loaded
@@ -259,48 +245,35 @@
     //       }
     //     });
     //   });
-
-    //   // Start observing when the API container exists
-    //   const checkForApi = setInterval(() => {
-    //     const apiContainer = document.getElementById("api");
-    //     if (apiContainer) {
-    //       observer.observe(apiContainer, {
-    //         childList: true,
-    //         subtree: true,
-    //       });
-    //       clearInterval(checkForApi);
-    //     }
-    //   }, 100);
-    // }
   }
 
   // Prevent form submission until email is verified
-  function preventPrematureSubmission() {
-    document.addEventListener("DOMContentLoaded", function () {
-      setTimeout(function () {
-        const forms = document.querySelectorAll("#api form");
+  // function preventPrematureSubmission() {
+  //   document.addEventListener("DOMContentLoaded", function () {
+  //     setTimeout(function () {
+  //       const forms = document.querySelectorAll("#api form");
 
-        forms.forEach(function (form) {
-          form.addEventListener("submit", function (e) {
-            if (!emailVerified) {
-              e.preventDefault();
-              e.stopPropagation();
+  //       forms.forEach(function (form) {
+  //         form.addEventListener("submit", function (e) {
+  //           if (!emailVerified) {
+  //             e.preventDefault();
+  //             e.stopPropagation();
 
-              const continueBtn = document.querySelector(".continue-btn");
-              if (continueBtn && !continueBtn.disabled) {
-                handleContinue();
-              }
-              return false;
-            }
+  //             const continueBtn = document.getElementById("continueBtn");
+  //             if (continueBtn && !continueBtn.disabled) {
+  //               handleContinue();
+  //             }
+  //             return false;
+  //           }
 
-            document.querySelector(".auth-container").classList.add("loading");
-          });
-        });
-      }, 500);
-    });
-  }
+  //           document.getElementById("auth-container").classList.add("loading");
+  //         });
+  //       });
+  //     }, 500);
+  //   });
+  // }
 
   // Initialize all functions
   monitorEmailInput();
-  preventPrematureSubmission();
+  //preventPrematureSubmission();
 })();
