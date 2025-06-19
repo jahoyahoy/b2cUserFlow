@@ -180,16 +180,18 @@ img {
   margin-top: 1rem;
 }
 
-/* Hide B2C default intro/heading also hides "OR" */
-#api .intro h2 {
-  display: none;
-}
-
 #api .entry {
   margin-bottom: 0;
 }
 
-/* Style B2C form inputs */
+/* hides B2C default container styling */
+#api .entry-item {
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
+}
+
+/* /// B2C form inputs /// */
 #api #email,
 #api #password,
 #api input[type="text"] {
@@ -204,7 +206,7 @@ img {
   font-family: var(--font-family-alt) !important;
 }
 
-/* hide password field, signin button and related elements */
+/* hide fields/buttons/elements */
 #api #password,
 #api #forgotPassword,
 #api button[type="submit"],
@@ -214,12 +216,18 @@ img {
   transition: all 0.3s ease !important;
 }
 
-/* Hide all labels */
-#api label {
+/* hide all labels, buttons and divider lines as well as b2c title and headings */
+#api label,
+#api .divider,
+#api .accountButton,
+#api .claims-provider-list-buttons,
+#api .intro p,
+#api .intro h2,
+#api .heading h1 {
   display: none !important;
 }
 
-/* show password field and signin button when email-verified class is added */
+/* show fields/buttons/elements when email-verified class is added */
 .email-verified #api #password,
 .email-verified #api #forgotPassword,
 .email-verified #api button[type="submit"],
@@ -242,7 +250,7 @@ img {
   transform: scale(1.02) !important;
 }
 
-/* Style B2C buttons */
+/* /// B2C buttons ///*/
 #api button,
 #api input[type="submit"] {
   width: 100% !important;
@@ -265,7 +273,7 @@ img {
   box-shadow: var(--box-shadow-hover) !important;
 }
 
-/* Style error messages */
+/* /// B2C error messages ///*/
 #api .error,
 #api .alert {
   background: var(--color-error-bg) !important;
@@ -283,24 +291,4 @@ img {
   font-size: 0.85rem !important;
   margin-top: 0.5rem !important;
   font-weight: 500 !important;
-}
-
-/* Hide sso buttons and divider line*/
-#api .divider,
-#api .accountButton,
-#api .claims-provider-list-buttons,
-#api .intro p {
-  display: none !important;
-}
-
-/* Hide B2C default container styling */
-#api .entry-item {
-  background: none !important;
-  border: none !important;
-  padding: 0 !important;
-}
-
-/* Hide B2C default title */
-#api .heading h1 {
-  display: none !important;
 }
