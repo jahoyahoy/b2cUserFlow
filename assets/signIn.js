@@ -1,15 +1,6 @@
 (function () {
   let emailVerified = false;
 
-  /// Current hints:
-  // "whokta" for Western Health Okta
-
-  // Domain configuration for custom IDP redirects
-  // const domains = ["@whtest.com"]; // Add more domains as needed
-  // const idpHintRedirects = {
-  //   "@whtest.com": "whokta",
-  // };
-
   // e.g. { "@domain.com" : "idpHint"}
   // hints are set against IDPs in azure
   const idpRedirects = {
@@ -87,7 +78,6 @@
       );
       passwordInput.focus();
     }
-    setTimeout(() => {}, 300); // possibly remove this if the hacky stuff works above
   }
 
   // show errors above email input
@@ -115,11 +105,11 @@
     }
   }
 
-  // this function waits for the page/document to be fully loaded then initializes the listeners for the form
+  // this function waits for the page/document to be fully loaded then initialises the listeners for the form
   function monitorEmailInput() {
-    // this function initializes all the listeners for the elements - is triggered once the content is loaded
+    // this function initialises all the listeners for the elements - is triggered once the content is loaded
 
-    function initializeEmailMonitoring() {
+    function initialiseListeners() {
       const emailInput = document.getElementById("email");
       const apiContainer = document.getElementById("api");
 
@@ -191,89 +181,26 @@
       return true;
     }
 
-    // Wait for DOMContentLoaded
-    // if (document.readyState === "loading") {
-    //   document.addEventListener("DOMContentLoaded", function () {
-    //     // Try multiple times with increasing delays
-    //     const attempts = [100, 500, 1000, 1500, 2000, 3000];
-    //     let attemptIndex = 0;
-
-    //     function tryInitialize() {
-    //       if (initializeEmailMonitoring()) {
-    //         return;
-    //       }
-
-    //       attemptIndex++;
-    //       if (attemptIndex < attempts.length) {
-    //         setTimeout(tryInitialize, attempts[attemptIndex]);
-    //       }
-    //     }
-
-    //     tryInitialize();
-    //   });
-    // } else {
-    //   setTimeout(() => initializeEmailMonitoring(), 100);
-    // }
-
+    // initialises the listeners when document is loaded
+    // otherwise continues to retry until successful
     if (document.readyState === "complete") {
-      // If the document is already loaded, try to initialize immediately
-      initializeEmailMonitoring();
+      // If the document is already loaded, try to initialise immediately
+      if (!initialiseListeners()) {
+        retryInitialise();
+      }
+
+      // sometimes listeners don't get attached properly on page load
+      // so we retry until they do
+      function retryInitialise() {
+        setTimeout(() => {
+          if (!initialiseListeners()) {
+            retryInitialise();
+          }
+        }, 1000);
+      }
     }
-
-    // // Also try when page is fully loaded
-    // window.addEventListener("load", function () {
-    //   setTimeout(() => {
-    //     if (!document.querySelector(".continue-btn")) {
-    //       initializeEmailMonitoring();
-    //     } else {
-    //       checkPrefilledEmail();
-    //     }
-    //   }, 1000);
-    // });
-
-    // // Watch for B2C API container changes
-    // if (window.MutationObserver) {
-    //   const observer = new MutationObserver(function (mutations) {
-    //     mutations.forEach(function (mutation) {
-    //       if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
-    //         const emailInput = document.querySelector(
-    //           '#api input[type="email"]'
-    //         );
-    //         if (emailInput && !document.querySelector(".continue-btn")) {
-    //           setTimeout(() => initializeEmailMonitoring(), 500);
-    //         }
-    //       }
-    //     });
-    //   });
   }
 
-  // Prevent form submission until email is verified
-  // function preventPrematureSubmission() {
-  //   document.addEventListener("DOMContentLoaded", function () {
-  //     setTimeout(function () {
-  //       const forms = document.querySelectorAll("#api form");
-
-  //       forms.forEach(function (form) {
-  //         form.addEventListener("submit", function (e) {
-  //           if (!emailVerified) {
-  //             e.preventDefault();
-  //             e.stopPropagation();
-
-  //             const continueBtn = document.getElementById("continueBtn");
-  //             if (continueBtn && !continueBtn.disabled) {
-  //               handleContinue();
-  //             }
-  //             return false;
-  //           }
-
-  //           document.getElementById("auth-container").classList.add("loading");
-  //         });
-  //       });
-  //     }, 500);
-  //   });
-  // }
-
-  // Initialize all functions
+  // functions
   monitorEmailInput();
-  //preventPrematureSubmission();
 })();
