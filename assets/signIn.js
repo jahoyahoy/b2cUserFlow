@@ -25,7 +25,7 @@
   // checks if email is prefilled by password manager/browser
   function checkPrefilledEmail() {
     const emailInput = document.querySelector('#api input[type="email"]');
-    const continueBtn = document.querySelector(".continue-btn");
+    const continueBtn = document.getElementById("continueBtn");
 
     if (emailInput && continueBtn) {
       const email = emailInput.value.trim();
@@ -120,6 +120,8 @@
   // and manages the continue button state for Azure B2C authentication flows.
 
   function monitorEmailInput() {
+    // this function initializes all the listeners for the elements - is triggered once the content is loaded
+
     function initializeEmailMonitoring() {
       const emailInput = document.querySelector('#api input[type="email"]');
       const apiContainer = document.getElementById("api");
@@ -128,11 +130,11 @@
         return false;
       }
 
-      // Check if continue button already exists
-      if (document.querySelector(".continue-btn")) {
-        checkPrefilledEmail();
-        return true;
-      }
+      // // Check if continue button already exists
+      // if (document.querySelector(".continue-btn")) {
+      //   checkPrefilledEmail();
+      //   return true;
+      // }
 
       const continueBtn = document.getElementById("continueBtn");
       // Create and insert continue button
@@ -232,44 +234,44 @@
       setTimeout(() => initializeEmailMonitoring(), 100);
     }
 
-    // Also try when page is fully loaded
-    window.addEventListener("load", function () {
-      setTimeout(() => {
-        if (!document.querySelector(".continue-btn")) {
-          initializeEmailMonitoring();
-        } else {
-          checkPrefilledEmail();
-        }
-      }, 1000);
-    });
+    // // Also try when page is fully loaded
+    // window.addEventListener("load", function () {
+    //   setTimeout(() => {
+    //     if (!document.querySelector(".continue-btn")) {
+    //       initializeEmailMonitoring();
+    //     } else {
+    //       checkPrefilledEmail();
+    //     }
+    //   }, 1000);
+    // });
 
-    // Watch for B2C API container changes
-    if (window.MutationObserver) {
-      const observer = new MutationObserver(function (mutations) {
-        mutations.forEach(function (mutation) {
-          if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
-            const emailInput = document.querySelector(
-              '#api input[type="email"]'
-            );
-            if (emailInput && !document.querySelector(".continue-btn")) {
-              setTimeout(() => initializeEmailMonitoring(), 500);
-            }
-          }
-        });
-      });
+    // // Watch for B2C API container changes
+    // if (window.MutationObserver) {
+    //   const observer = new MutationObserver(function (mutations) {
+    //     mutations.forEach(function (mutation) {
+    //       if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
+    //         const emailInput = document.querySelector(
+    //           '#api input[type="email"]'
+    //         );
+    //         if (emailInput && !document.querySelector(".continue-btn")) {
+    //           setTimeout(() => initializeEmailMonitoring(), 500);
+    //         }
+    //       }
+    //     });
+    //   });
 
-      // Start observing when the API container exists
-      const checkForApi = setInterval(() => {
-        const apiContainer = document.getElementById("api");
-        if (apiContainer) {
-          observer.observe(apiContainer, {
-            childList: true,
-            subtree: true,
-          });
-          clearInterval(checkForApi);
-        }
-      }, 100);
-    }
+    //   // Start observing when the API container exists
+    //   const checkForApi = setInterval(() => {
+    //     const apiContainer = document.getElementById("api");
+    //     if (apiContainer) {
+    //       observer.observe(apiContainer, {
+    //         childList: true,
+    //         subtree: true,
+    //       });
+    //       clearInterval(checkForApi);
+    //     }
+    //   }, 100);
+    // }
   }
 
   // Prevent form submission until email is verified
