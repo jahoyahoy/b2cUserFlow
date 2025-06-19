@@ -40,11 +40,11 @@
 
     if (!validateEmail(email)) {
       // currently doesn't really do much since continue should be disabled if the email is invalid
-      showEmailError("Please enter a valid email address");
+      showError("Please enter a valid email address");
       return;
     }
 
-    clearEmailError();
+    clearErrors();
 
     // Check for custom IDP domains
     if (Object.keys(idpRedirects).some((domain) => email.endsWith(domain))) {
@@ -83,36 +83,29 @@
   }
 
   // show errors above email input
-  function showEmailError(message) {
-    clearEmailError();
-    const emailInput = document.getElementById("email");
-    if (emailInput) {
-      const errorDiv = document.createElement("div");
-      errorDiv.className = "field-validation-error";
-      errorDiv.id = "emailError";
-      errorDiv.textContent = message;
-      emailInput.parentNode.insertBefore(errorDiv, emailInput.nextSibling);
-      emailInput.style.borderColor = "#e74c3c";
+  function showError(message) {
+    const azureError = document.querySelector("#api .error"); // get azure error div
+
+    if (!azureError) {
+      return;
+    }
+
+    const errorTextNode = azureError.firstChild;
+
+    if (azureError.ariaHidden === "true") {
+      errorTextNode.textContent = message; // update azure error text
+      azureError.ariaHidden = "false"; // hide azure error
+    } else {
+      errorTextNode.textContent = message; // update azure error text
     }
   }
 
-  // use this to clear email error messages
-  // this also handles clearing azures own error messages
-  function clearEmailError() {
-    const existingError = document.getElementById("emailError");
+  // use this to clear error messages
+  function clearErrors() {
     const azureError = document.querySelector("#api .error"); // get azure error div
-    if (existingError) {
-      existingError.remove();
-    }
-
     // hide azure error
     if (azureError && azureError.ariaHidden !== "true") {
       azureError.ariaHidden = "true";
-    }
-
-    const emailInput = document.getElementById("email");
-    if (emailInput) {
-      emailInput.style.borderColor = "#e1e5e9";
     }
   }
 
@@ -152,7 +145,7 @@
             subtitle.textContent = "Sign in to your account to continue";
           }
 
-          clearEmailError();
+          clearErrors();
           return;
         }
 
@@ -166,7 +159,7 @@
           }
         }
 
-        clearEmailError();
+        clearErrors();
       });
 
       // add listeners for all types of email input changes
