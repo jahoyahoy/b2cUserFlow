@@ -9,7 +9,8 @@
 
   // validate email
   function validateEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex =
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/; // /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   }
 
@@ -38,6 +39,7 @@
     const email = emailInput.value.toLowerCase().trim();
 
     if (!validateEmail(email)) {
+      // currently doesn't really do much since continue should be disabled if the email is invalid
       showEmailError("Please enter a valid email address");
       return;
     }
@@ -98,7 +100,7 @@
   // this also handles clearing azures own error messages
   function clearEmailError() {
     const existingError = document.getElementById("emailError");
-    const azureError = document.querySelector("#api .error.pageLevel"); // get azure error div
+    const azureError = document.querySelector("#api .error"); // get azure error div
     if (existingError) {
       existingError.remove();
     }
