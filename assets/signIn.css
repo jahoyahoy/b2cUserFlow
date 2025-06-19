@@ -294,11 +294,3 @@ img {
   font-size: 0.9rem !important;
   margin-bottom: 1rem !important;
 }
-
-/* Style validation errors */
-#api .field-validation-error {
-  color: var(--color-error) !important;
-  font-size: 0.85rem !important;
-  margin-top: 0.5rem !important;
-  font-weight: 500 !important;
-}
