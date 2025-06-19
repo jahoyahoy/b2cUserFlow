@@ -52,6 +52,14 @@ body {
   line-height: 1.5;
 }
 
+a {
+  background-color: transparent;
+}
+
+a:hover {
+  outline: 0;
+}
+
 /*Hide background image on smaller screens*/
 @media only screen and (max-width: 600px) {
   img[data-tenant-branding-background="true"] {
@@ -164,6 +172,7 @@ img {
   .auth-container {
     padding: 30px 20px;
     margin: 10px;
+    box-shadow: none;
   }
 
   .auth-title {
@@ -229,18 +238,17 @@ img {
 
 /* show fields/buttons/elements when email-verified class is added */
 .email-verified #api #password,
-.email-verified #api #forgotPassword,
 .email-verified #api button[type="submit"],
 .email-verified #api input[type="submit"] {
   display: block !important;
   opacity: 1 !important;
 }
 
-/* for password field container to allow reordering */
-/* .email-verified #api #password {
-  display: flex !important;
-  flex-direction: column !important;
-} */
+.email-verified #api #forgotPassword {
+  display: block !important;
+  opacity: 1 !important;
+  text-align: left !important;
+}
 
 #api #email:focus,
 #api #password:focus {
