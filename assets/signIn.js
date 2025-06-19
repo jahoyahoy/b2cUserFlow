@@ -107,7 +107,7 @@
 
     // hide azure error
     if (azureError && azureError.ariaHidden !== "true") {
-      azureError.ariaHidden = true;
+      azureError.ariaHidden = "true";
     }
 
     const emailInput = document.getElementById("email");
