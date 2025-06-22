@@ -4,7 +4,7 @@
   // e.g. { "@domain.com" : "idpHint"}
   // hints are set against IDPs in azure
   const idpRedirects = {
-    "@whtest.com": "whokta",
+    "@fhppp.org.au": "whokta",
   };
 
   // validate email
